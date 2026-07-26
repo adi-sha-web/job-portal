@@ -108,7 +108,7 @@ export default function jobsPage() {
     return (
         <div className="max-w-3xl mx-auto p-6">
             <h1 className="text-3xl font-bold mb-6">
-                {jobs.length > 0 ? "Update Job" : "Create Job"}
+                Create Job
             </h1>
             <form onSubmit={handleSubmit}
                 className="space-y-4">
