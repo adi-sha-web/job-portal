@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import { auth } from "@/auth";
 import Job from "@/models/Job";
+import Application from "@/models/Application";
 
 export async function GET(request, { params }) {
     await connectDB();
@@ -19,9 +20,9 @@ export async function GET(request, { params }) {
     }
 
     try {
-        const { id } = await params;
+        const { id } = params;
 
-        const job = await Job.findById(id);
+const job = await Job.findById(id);
 
         if (!job) {
             return NextResponse.json(
@@ -177,7 +178,7 @@ export async function PUT(request, { params }) {
             {
                 status: 200,
             }
-        ); 
+        );
 
 
 
@@ -198,7 +199,7 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
     await connectDB();
-    console.log(params);
+    
 
     const session = await auth();
 
@@ -254,8 +255,13 @@ export async function DELETE(request, { params }) {
                 }
             );
         }
+        
+        await Application.deleteMany({
+            jobId: id,
+        });
 
         await job.deleteOne();
+
 
         return NextResponse.json(
             {

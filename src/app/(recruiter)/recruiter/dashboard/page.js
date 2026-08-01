@@ -66,7 +66,7 @@ export default async function Dashboard() {
   return (
     <main className="min-h-screen bg-slate-50 flex">
 
-      <RecruiterSidebar />
+      
 
       <div className="flex-1 p-10 mx-auto max-w-7xl px-6 py-10">
 

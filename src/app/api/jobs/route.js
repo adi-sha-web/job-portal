@@ -65,18 +65,7 @@ export async function POST(request) {
             deadline,
         } = body;
 
-        console.log({
-            title,
-            description,
-            location,
-            workMode,
-            employmentType,
-            experience,
-            salary,
-            skills,
-            openings,
-            deadline,
-        });
+
 
         if (
             !title?.trim() ||
@@ -88,18 +77,7 @@ export async function POST(request) {
             !salary ||
             !skills
         ) {
-            console.log({
-            title,
-            description,
-            location,
-            workMode,
-            employmentType,
-            experience,
-            salary,
-            skills,
-            openings,
-            deadline,
-        });
+            
             return NextResponse.json(
                 {
                     success: false,

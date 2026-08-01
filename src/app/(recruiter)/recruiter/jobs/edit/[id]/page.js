@@ -25,19 +25,42 @@ export default function EditJob() {
 
     useEffect(() => {
         const fetchJob = async () => {
-            const res = await fetch(`/api/jobs/${id}`);
-            const data = await res.json();
+            try {
+                const res = await fetch(`/api/jobs/${id}`);
+                const data = await res.json();
 
-            if (data.success) {
-                alert("Job updated successfully.");
-                router.push("/recruiter/jobs");
+                if (data.success && data.job) {
+                    // setCompanyExists(true);
+
+                    setForm({
+                        title: data.job.title || "",
+                        description: data.job.description || "",
+                        location: data.job.location || "",
+                        workMode: data.job.workMode || "",
+                        employmentType: data.job.employmentType || "",
+                        experience: data.job.experience || "",
+                        salary: data.job.salary || "",
+                        skills: data.job.skills || "",
+                        openings: data.job.openings || "",
+                        deadline: data.job.deadline
+                            ? data.job.deadline.split("T")[0]
+                            : "",
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to fetch company:", error);
             }
         };
 
-        if (id) {
-            fetchJob();
-        }
-    }, [id]);
+        fetchJob();
+    }, []);
+
+    const handleChange = (e) => {
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value,
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -50,7 +73,6 @@ export default function EditJob() {
                 },
                 body: JSON.stringify(form),
             });
-            console.log(res.status);
             const data = await res.json();
 
             alert(data.message);
@@ -68,6 +90,8 @@ export default function EditJob() {
                     openings: "",
                     deadline: "",
                 });
+                alert("Job updated successfully.");
+                router.push("/recruiter/jobs");
             }
         } catch (error) {
             console.error(error);

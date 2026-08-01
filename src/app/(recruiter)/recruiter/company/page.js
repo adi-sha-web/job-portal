@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 export default function CompanyPage() {
+    const [loading, setLoading] = useState(false);
     const [companyExists, setCompanyExists] = useState(false);
 
     useEffect(() => {
@@ -13,6 +18,7 @@ export default function CompanyPage() {
 
                 if (data.success && data.company) {
                     setCompanyExists(true);
+
 
                     setForm({
                         companyName: data.company.companyName || "",
@@ -62,10 +68,10 @@ export default function CompanyPage() {
 
             const data = await res.json();
             if (data.success) {
-                alert(data.message);
+                toast.success(data.message)
                 setCompanyExists(true);
             } else {
-                alert(data.message);
+                toast.error(data.message);
 
             }
         } catch (error) {
@@ -81,60 +87,117 @@ export default function CompanyPage() {
             </h1>
             <form onSubmit={handleSubmit}
                 className="space-y-4">
-                <input
-                    type="text"
-                    name="companyName"
-                    value={form.companyName}
-                    onChange={handleChange}
-                    placeholder="Company Name"
-                    className="w-full border rounded-lg p-3"
-                />
-                <input
-                    type="url"
-                    name="website"
-                    value={form.website}
-                    onChange={handleChange}
-                    placeholder="Website"
-                    className="w-full border rounded-lg p-3"
-                />
-                <input
-                    type="text"
-                    name="industry"
-                    value={form.industry}
-                    onChange={handleChange}
-                    placeholder="Industry"
-                    className="w-full border rounded-lg p-3"
-                />
-                <input
-                    type="text"
-                    name="location"
-                    value={form.location}
-                    onChange={handleChange}
-                    placeholder="Location"
-                    className="w-full border rounded-lg p-3"
-                />
-                <input
-                    type="text"
-                    name="companySize"
-                    value={form.companySize}
-                    onChange={handleChange}
-                    placeholder="Company Size"
-                    className="w-full border rounded-lg p-3"
-                />
+                <div className="grid gap-6 md:grid-cols-2">
+                    <div>
 
+                        <Label
+                            htmlFor="about"
+                            className="text-sm pb-3 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                            Company Name
+                        </Label>
+                        <Input
+                            type="text"
+                            name="companyName"
+                            value={form.companyName}
+                            onChange={handleChange}
+                            placeholder="Company Name"
+                            className="w-full border rounded-lg p-3"
+                        />
+                    </div>
 
-                <textarea
-                    name="about"
-                    value={form.about}
-                    onChange={handleChange}
-                    placeholder="About Company"
-                    rows={6}
-                    className="w-full border rounded-lg p-3"
-                />
+                    <div>
+                        <Label
+                            htmlFor="about"
+                            className="text-sm pb-3 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                            Website
+                        </Label>
+                        <Input
+                            type="url"
+                            name="website"
+                            value={form.website}
+                            onChange={handleChange}
+                            placeholder="Website"
+                            className="w-full border rounded-lg p-3"
+                        />
+                    </div>
 
-                <button type="submit" className="bg-blue-600 text-white px-5 py-3 rounded-lg">
-                    {companyExists ? "Update Company" : "Create Company"}
-                </button>
+                    <div>
+                        <Label
+                            htmlFor="about"
+                            className="text-sm pb-3 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                            Industry
+                        </Label>
+                        <Input
+                            type="text"
+                            name="industry"
+                            value={form.industry}
+                            onChange={handleChange}
+                            placeholder="Industry"
+                            className="w-full border rounded-lg p-3"
+                        />
+                    </div>
+                    <div>
+                        <Label
+                            htmlFor="about"
+                            className="text-sm pb-3 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                            Location
+                        </Label>
+                        <Input
+                            type="text"
+                            name="location"
+                            value={form.location}
+                            onChange={handleChange}
+                            placeholder="Location"
+                            className="w-full border rounded-lg p-3"
+                        />
+                    </div>
+                    <div>
+                        <Label
+                            htmlFor="about"
+                            className="text-sm pb-3 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                            Company Size
+                        </Label>
+                        <Input
+                            type="text"
+                            name="companySize"
+                            value={form.companySize}
+                            onChange={handleChange}
+                            placeholder="Company Size"
+                            className="w-full border rounded-lg p-3"
+                        />
+                    </div>
+                    </div>
+                    <Label
+                        htmlFor="about"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        About Company
+                    </Label>
+                    <textarea
+                        name="about"
+                        value={form.about}
+                        onChange={handleChange}
+                        placeholder="About Company"
+                        rows={6}
+                        className="w-full border rounded-lg p-3"
+                    />
+
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                    >
+                        {loading
+                            ? "Saving..."
+                            : companyExists
+                                ? "Update Company"
+                                : "Create Company"}
+                    </Button>
+                
             </form>
         </div>
     );

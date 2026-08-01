@@ -16,13 +16,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             async authorize(credentials) {
                 await connectDB();
 
-                console.log("Credentials:", credentials);
+                
 
                 const user = await User.findOne({
                     email: credentials.email,
                 });
 
-                console.log("User Found:", user);
+               
 
                 if (!user) {
                     throw new Error("User not found");
@@ -33,7 +33,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     user.password
                 );
 
-                console.log("Password Match:", isMatch);
+               
 
                 if (!isMatch) {
                     throw new Error("Password is incorrect");

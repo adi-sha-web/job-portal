@@ -3,81 +3,41 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default function jobsPage() {
-    const [jobs, setJobs] = useState([]);
+import JobCard from "@/components/jobs/JobCard";
 
-    const [form, setForm] = useState({
-        title: "",
-        description: "",
-        location: "",
-        workMode: "",
-        employmentType: "",
-        experience: "",
-        salary: "",
-        skills: "",
-        openings: "",
-        deadline: "",
-    });
+import {
+    BriefcaseBusiness,
+    MapPin,
+    Laptop,
+    IndianRupee,
+    Users,
+    Calendar,
+    Clock3,
+    Pencil,
+    Eye,
+} from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import DeleteJobButton from "@/components/jobs/DeleteJobButton";
+
+export default function jobsPage() {
+
+    const [jobs, setJobs] = useState([]);
 
     useEffect(() => {
         const fetchJobs = async () => {
-            try {
-                const res = await fetch("/api/jobs");
-                const data = await res.json();
+            const res = await fetch("/api/jobs/public");
+            const data = await res.json();
 
-                if (data.success) {
-                    setJobs(data.jobs);
-                }
-            } catch (error) {
-                console.error(error);
+            if (data.success) {
+                setJobs(data.jobs);
             }
         };
 
         fetchJobs();
     }, []);
 
-    const handleChange = (e) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value,
-        });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            const res = await fetch("/api/jobs", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(form),
-            });
-            console.log(res.status);
-            const data = await res.json();
-
-            alert(data.message);
-
-            if (data.success) {
-                setForm({
-                    title: "",
-                    description: "",
-                    location: "",
-                    workMode: "",
-                    employmentType: "",
-                    experience: "",
-                    salary: "",
-                    skills: "",
-                    openings: "",
-                    deadline: "",
-                });
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Something went wrong.");
-        }
-    };
 
     const handleDelete = async (id) => {
         const confirmDelete = confirm("Are you sure you want to delete this job?");
@@ -104,130 +64,168 @@ export default function jobsPage() {
         }
     };
 
+    function formatSalary(salary) {
+        return `${(salary / 100000).toFixed(1)} LPA`;
+    }
+
 
     return (
-        <div className="max-w-3xl mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-6">
-                Create Job
-            </h1>
-            <form onSubmit={handleSubmit}
-                className="space-y-4">
-                <input
-                    type="text"
-                    name="title"
-                    value={form.title}
-                    onChange={handleChange}
-                    placeholder="Job Title"
-                    className="w-full border rounded-lg p-3"
-                />
-                <textarea
-                    name="description"
-                    value={form.description}
-                    onChange={handleChange}
-                    placeholder="Description"
-                    rows={6}
-                    className="w-full border rounded-lg p-3"
-                />
-
-                <input
-                    type="text"
-                    name="location"
-                    value={form.location}
-                    onChange={handleChange}
-                    placeholder="Location"
-                    className="w-full border rounded-lg p-3"
-                />
-                <div>
-                    <label
-                        htmlFor="workMode"
-                        className="block mb-2 font-medium"
-                    >
-                        Work Mode
-                    </label>
-
-                    <select
-                        id="workMode"
-                        name="workMode"
-                        value={form.workMode}
-                        onChange={handleChange}
-                        className="w-full border rounded-lg p-3"
-                    >
-                        <option value="">Select Work Mode</option>
-                        <option value="Remote">Remote</option>
-                        <option value="Hybrid">Hybrid</option>
-                        <option value="Onsite">Onsite</option>
-                    </select>
-                </div>
-                <div>
-                    <label
-                        htmlFor="employmentType"
-                        className="block mb-2 font-medium"
-                    >
-                        Choose a Employment Type:</label>
-                    <select
-                        name="employmentType"
-                        id="employmentType"
-                        value={form.employmentType}
-                        onChange={handleChange}
-                        className="w-full border rounded-lg p-3"
-                    ><option value="">Select Employment Type</option>
-                        <option value="Full-time">Full-time</option>
-                        <option value="Part-time">Part-time</option>
-                        <option value="Contract">Contract</option>
-                        <option value="Internship">Internship</option>
-                    </select>
-                </div>
-                <input
-                    type="text"
-                    name="experience"
-                    value={form.experience}
-                    onChange={handleChange}
-                    placeholder="Experience"
-                    className="w-full border rounded-lg p-3"
-                />
-                <input
-                    type="number"
-                    name="salary"
-                    value={form.salary}
-                    onChange={handleChange}
-                    placeholder="Salary"
-                    className="w-full border rounded-lg p-3"
-                />
-                <input
-                    type="text"
-                    name="skills"
-                    value={form.skills}
-                    onChange={handleChange}
-                    placeholder="Skills"
-                    className="w-full border rounded-lg p-3"
-                />
-                <input
-                    type="number"
-                    name="openings"
-                    value={form.openings}
-                    onChange={handleChange}
-                    placeholder="Openings"
-                    className="w-full border rounded-lg p-3"
-                />
-                <input
-                    type="date"
-                    name="deadline"
-                    value={form.deadline}
-                    onChange={handleChange}
-                    placeholder="Deadline"
-                    className="w-full border rounded-lg p-3"
-                />
-                <button type="submit" className="bg-blue-600 text-white px-5 py-3 rounded-lg">
-                    Create Job
-                </button>
-            </form>
-
-
-            <hr className="my-10" />
+        <div className=" mx-auto p-6">
 
             <h2 className="text-2xl font-bold mb-4">
-                My Jobs
+                Jobs Posted
             </h2>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    {jobs.map((job) => (              
+
+
+                <div className="rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-md" key={job._id}
+                        job={job}>
+                
+                
+                            <div className="flex items-start justify-between">
+                
+                                <div>
+                
+                                    <h2 className="text-xl font-semibold">
+                                        {job.title}
+                                    </h2>
+                
+                                    <div className="mt-2 flex flex-wrap gap-2">
+                
+                                        <Badge className="bg-green-100 text-green-700 border-green-200"
+                                            variant={
+                                                job.status === "Open"
+                                                    ? "default"
+                                                    : "secondary"
+                                            }
+                                        >
+                                            {job.status}
+                                        </Badge>
+                
+                                        <Badge variant="outline">
+                                            {job.employmentType}
+                                        </Badge>
+                
+                                    </div>
+                
+                                </div>
+                
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    size="icon"
+                                >
+                                    <Link href={`/recruiter/jobs/edit/${job._id}`}>
+                                        <Pencil className="h-4 w-4" />
+                                    </Link>
+                                </Button>
+                
+                            </div>
+                
+                            {/* Details */}
+                
+                            <div className="mt-6 grid gap-4 md:grid-cols-2">
+                
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <MapPin className="h-4 w-4" />
+                                    {job.location}
+                                </div>
+                
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <Laptop className="h-4 w-4" />
+                                    {job.workMode}
+                                </div>
+                
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <BriefcaseBusiness className="h-4 w-4" />
+                                    {job.experience}
+                                </div>
+                
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <IndianRupee className="h-4 w-4" />
+                                    {formatSalary(job.salary)}
+                                </div>
+                
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <Users className="h-4 w-4" />
+                                    {job.openings} Openings
+                                </div>
+                
+                                {job.deadline && (
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <Calendar className="h-4 w-4" />
+                                        Apply before{" "}
+                                        {new Date(job.deadline).toLocaleDateString()}
+                                    </div>
+                                )}
+                
+                            </div>
+                
+                            {/* Skills */}
+                
+                            {job.skills.length > 0 && (
+                                <div className="mt-6 flex flex-wrap gap-2">
+                
+                                    {job.skills.map((skill) => (
+                                        <Badge
+                                            key={skill}
+                                            variant="secondary"
+                                        >
+                                            {skill}
+                                        </Badge>
+                                    ))}
+                
+                                </div>
+                            )}
+                
+                            {/* Footer */}
+                
+                            <div className="mt-6 flex items-center justify-between border-t pt-5">
+                
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                
+                                    <Clock3 className="h-4 w-4" />
+                
+                                    Posted{" "}
+                                    {new Date(job.createdAt).toLocaleDateString()}
+                
+                                </div>
+                
+                                <div className="flex gap-3">
+                
+                                    <Button
+                                        variant="outline"
+                                        asChild
+                                    >
+                                        <Link href={`/jobs/${job._id}`}>
+                                            <Eye className="mr-2 h-4 w-4" />
+                                            Preview
+                                        </Link>
+                                    </Button>
+                
+                                    <Button asChild>
+                                        <Link href={`/jobs/${job._id}`}>
+                                            Apply
+                                        </Link>
+                                    </Button>
+                
+                                    <DeleteJobButton
+                                        jobId={job._id}
+                                        title={job.title}
+                                    />
+                
+                                </div>
+                
+                            </div>
+                
+                        </div>
+
+    ))}
+                </div>
+
 
             <table className="w-full border-collapse border">
                 <thead>
@@ -252,7 +250,7 @@ export default function jobsPage() {
 
                             <td className="border p-2">
                                 <Link
-                                    href={`/jobs/edit/${job._id}`}
+                                    href={`/recruiter/jobs/edit/${job._id}`}
                                     className="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
                                 >
                                     Edit
@@ -267,7 +265,7 @@ export default function jobsPage() {
                                 </button>
 
                                 <Link
-                                    href={`/recruiter/jobs/${job._id}`}
+                                    href={`/recruiter/applicants/${job._id}`}
                                     className="bg-indigo-600 text-white px-3 py-1 rounded mr-2"
                                 >
                                     View Applicants

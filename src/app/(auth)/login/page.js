@@ -28,7 +28,7 @@ export default function LoginPage() {
       redirect: false,
     });
 
-    // console.log("SignIn Response:", res, form.email, form.password, e.preventDefault());
+   
 
     if (res?.error) {
       alert("Invalid Email or Password");
