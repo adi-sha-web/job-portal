@@ -3,6 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
+import { LogOut } from "lucide-react";
+import { signOut } from "next-auth/react";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import Logo from "./Logo";
 
@@ -12,21 +22,20 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
 
-const navLinks = [
-  {
-    name: "Jobs",
-    href: "/jobs",
-  },
-  {
-    name: "Companies",
-    href: "/companies",
-  },
-];
 
-export default function Navbar() {
-  const pathname = usePathname();
+
+export default function Navbar({ session }) {
+  const pathname = usePathname()
+
+  const initials =
+    session?.user?.name
+      ?.split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase() || "U";
+
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
@@ -37,40 +46,66 @@ export default function Navbar() {
 
         {/* Desktop */}
 
-        <nav className="hidden items-center gap-8 md:flex">
-
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={`relative text-sm font-medium transition-colors ${
-                pathname === link.href
-                  ? "text-indigo-600"
-                  : "text-slate-600 hover:text-indigo-600"
-              }`}
-            >
-              {link.name}
-            </Link>
-          ))}
-
-        </nav>
+        
 
         {/* Desktop Buttons */}
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-3  md:flex ">
 
-          <Link href="/login">
-            <Button variant="ghost">
-              Login
-            </Button>
-          </Link>
+          {session ? (
+            <>
+              <DropdownMenu>
 
-          <Link href="/register">
-            <Button>
-              Register
-            </Button>
-          </Link>
+                <DropdownMenuTrigger>
 
+                  <Avatar className="cursor-pointer">
+
+                    <AvatarFallback>
+                      {initials}
+                    </AvatarFallback>
+
+                  </Avatar>
+
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end">
+
+                  <DropdownMenuItem>
+                    <Link href={`/${session.user.role}/dashboard`}>
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem>
+                    Settings
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem>
+                    <button
+                      onClick={() => signOut()}
+                      className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-700 transition hover:bg-red-50 hover:text-red-600"
+                    >
+                      <LogOut className="h-5 w-5" />
+
+                      <span>Logout</span>
+                    </button>
+                  </DropdownMenuItem>
+
+                </DropdownMenuContent>
+
+              </DropdownMenu>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm font-medium text-slate-600 hover:text-indigo-600">
+                Login
+              </Link>
+
+              <Link href="/register" className="text-sm font-medium bg-black text-white hover:text-indigo-600 border-2 border-slate-300 rounded-md px-4 py-2 hover:bg-white hover:border-black ">
+                Register
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile */}
@@ -92,34 +127,36 @@ export default function Navbar() {
 
             <SheetContent side="right">
 
-              <div className="mt-10 flex flex-col gap-5">
+              <div className="mt-10 flex flex-col gap-5 px-5">
 
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className="text-lg font-medium"
-                  >
-                    {link.name}
-                  </Link>
-                ))}
+                {session ? (
+                  <>
+                    <Link href={`/${session.user.role}/dashboard`}>
+                      Dashboard
+                    </Link>
+                    -------------------------------------------------------------------------
+                    <button
+                      onClick={() => signOut()}
+                      className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-700 transition hover:bg-red-50 hover:text-red-600"
+                    >
+                      <LogOut className="h-5 w-5" />
 
-                <Separator />
+                      <span>Logout</span>
+                    </button>
 
-                <Link href="/login">
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                  >
-                    Login
-                  </Button>
-                </Link>
 
-                <Link href="/register">
-                  <Button className="w-full">
-                    Register
-                  </Button>
-                </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/login">
+                      Login
+                    </Link>
+
+                    <Link href="/register">
+                      Register
+                    </Link>
+                  </>
+                )}
 
               </div>
 
@@ -132,6 +169,6 @@ export default function Navbar() {
       </div>
 
     </header>
-    
+
   );
 }

@@ -7,7 +7,7 @@ import connectDB from "@/lib/db";
 import RecentJobs from "@/components/dashboard/RecentJobs";
 import QuickActions from "@/components/dashboard/QuickActions";
 import LatestApplicants from "@/components/dashboard/LatestApplicants";
-import RecruiterSidebar from "@/components/layout/RecruiterSidebar";
+
 
 import {
   BriefcaseBusiness,

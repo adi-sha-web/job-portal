@@ -41,7 +41,6 @@ export default function Hero() {
                         and top companies.
 
                         <div className="mt-10 flex rounded-2xl border bg-white p-2 shadow-xl">
-
                             <Input
                                 placeholder="Search jobs..."
                                 className="border-0 shadow-none"

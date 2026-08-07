@@ -85,6 +85,7 @@ export default function ApplicantCard({
                 </Button>
 
             </div>
+            
 
         </div>
 

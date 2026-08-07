@@ -9,20 +9,12 @@ export async function GET(request, { params }) {
 
     const session = await auth();
 
-    if (!session) {
-        return NextResponse.json(
-            {
-                success: false,
-                message: "Unauthorized",
-            },
-            { status: 401 }
-        );
-    }
-
     try {
-        const { id } = params;
+        const { id } =await params;
 
-const job = await Job.findById(id);
+        const job = await Job.findById(id)
+            .populate("companyId")
+            .populate("recruiterId", "name email");
 
         if (!job) {
             return NextResponse.json(
@@ -88,7 +80,9 @@ export async function PUT(request, { params }) {
         const { id } = await params;
 
 
-        const job = await Job.findById(id);
+        const job = await Job.findById(id)
+            .populate("companyId")
+            .populate("recruiterId", "name email");
 
         if (!job) {
             return NextResponse.json(
@@ -199,7 +193,7 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
     await connectDB();
-    
+
 
     const session = await auth();
 
@@ -255,7 +249,7 @@ export async function DELETE(request, { params }) {
                 }
             );
         }
-        
+
         await Application.deleteMany({
             jobId: id,
         });

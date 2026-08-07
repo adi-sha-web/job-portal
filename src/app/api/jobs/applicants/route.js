@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
+import Job from "@/models/Job";
 import { auth } from "@/auth";
-
-import Application from "@/models/Application";
-import "@/models/Company";
-import "@/models/Job";
 
 export async function GET() {
     await connectDB();
 
     const session = await auth();
-
+    
     if (!session) {
         return NextResponse.json(
             {
@@ -23,7 +20,7 @@ export async function GET() {
         );
     }
 
-    if (session.user.role !== "candidate") {
+    if (session.user.role !== "recruiter") {
         return NextResponse.json(
             {
                 success: false,
@@ -37,31 +34,22 @@ export async function GET() {
 
     try {
 
-        const applications = await Application.find({
-            candidateId: session.user.id,
-        })
-            .populate({
-                path: "jobId",
-                populate: {
-                    path: "companyId",
-                },
-            })
-            .sort({
-                createdAt: -1,
-            });
+        const jobs = await Job.find({
+            recruiterId: session.user.id,
+        }).sort({
+            createdAt: -1,
+        });
 
         return NextResponse.json(
             {
                 success: true,
-                applications,
+                jobs,
             },
             {
                 status: 200,
             }
         );
-
     } catch (error) {
-
         console.error(error);
 
         return NextResponse.json(

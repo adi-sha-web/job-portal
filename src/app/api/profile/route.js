@@ -1,9 +1,63 @@
 import { NextResponse } from "next/server";
+import connectDB from "@/lib/db";
 import { auth } from "@/auth";
 
-import connectDB from "@/lib/db";
 import CandidateProfile from "@/models/CandidateProfile";
 
+export async function GET() {
+
+    await connectDB();
+
+    const session = await auth();
+
+    if (!session) {
+        return NextResponse.json(
+            {
+                success: false,
+                message: "Unauthorized",
+            },
+            {
+                status: 401,
+            }
+        );
+    }
+
+    try {
+
+        let profile = await CandidateProfile.findOne({
+            userId: session.user.id,
+        });
+
+        if (!profile) {
+
+            profile = await CandidateProfile.create({
+                userId: session.user.id,
+            });
+
+        }
+
+        return NextResponse.json({
+            success: true,
+            profile,
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        return NextResponse.json(
+            {
+                success: false,
+                message: "Internal Server Error",
+            },
+            {
+                status: 500,
+            }
+        );
+
+    }
+
+}
 export async function POST(request) {
   try {
     await connectDB();
@@ -90,93 +144,87 @@ export async function POST(request) {
   }
 }
 
-export async function GET() {
-  try {
-    await connectDB();
-
-    const session = await auth();
-
-    if (!session) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Unauthorized",
-        },
-        { status: 401 }
-      );
-    }
-
-    const profile = await CandidateProfile.findOne({
-      userId: session.user.id,
-    });
-
-    return NextResponse.json(
-      {
-        success: true,
-        profile,
-      },
-      { status: 200 }
-    );
-  } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: error.message,
-      },
-      { status: 500 }
-    );
-  }
-}
-
 export async function PUT(request) {
-  try {
+
     await connectDB();
 
     const session = await auth();
 
     if (!session) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Unauthorized",
-        },
-        {
-          status: 401,
-        }
-      );
+        return NextResponse.json(
+            {
+                success: false,
+                message: "Unauthorized",
+            },
+            {
+                status: 401,
+            }
+        );
     }
 
-    const data = await request.json();
+    try {
 
-    const updatedProfile = await CandidateProfile.findOneAndUpdate(
-      {
-        userId: session.user.id,
-      },
-      data,
-      {
-        new: true,
-      }
-    );
+        const body = await request.json();
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Profile updated successfully",
-        profile: updatedProfile,
-      },
-      {
-        status: 200,
-      }
-    );
-  } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: error.message,
-      },
-      {
-        status: 500,
-      }
-    );
-  }
+        const profile = await CandidateProfile.findOneAndUpdate(
+
+            {
+                userId: session.user.id,
+            },
+
+            {
+                phone: body.phone,
+                location: body.location,
+                bio: body.bio,
+                education: body.education,
+                experience: body.experience,
+                github: body.github,
+                linkedin: body.linkedin,
+                portfolio: body.portfolio,
+                resume: body.resume,
+                profileImage: body.profileImage,
+
+                skills: body.skills
+                    .split(",")
+                    .map(skill => skill.trim())
+                    .filter(Boolean),
+
+                jobTitle: body.jobTitle,
+                availability: body.availability,
+
+            },
+
+            {
+                new: true,
+                upsert: true,
+            }
+
+        );
+
+        return NextResponse.json({
+
+            success: true,
+
+            message: "Profile updated successfully.",
+
+            profile,
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        return NextResponse.json(
+            {
+                success: false,
+                message: "Internal Server Error",
+            },
+            {
+                status: 500,
+            }
+        );
+
+    }
+
 }

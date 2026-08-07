@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
+import { success } from "zod";
 
 export async function POST(request) {
     try {
@@ -11,17 +12,23 @@ export async function POST(request) {
 
         if (!name || !email || !password || !role) {
             return NextResponse.json(
-                { success: false ,
-                 message: "Please provide all required fields" },
+                {
+                    success: false,
+                    message: "Please fill all fields.",
+                },
+                { status: 400 }
             );
         }
 
-        const userexists = await User.findOne({ email });
+        const existingUser = await User.findOne({ email });
 
-        if (userexists) {
+        if (existingUser) {
             return NextResponse.json(
-                { message: "User already exists" ,
-                 success: false }
+                {
+                    success: false,
+                    message: "User already exists.",
+                },
+                { status: 400 }
             );
         }
 
@@ -35,12 +42,21 @@ export async function POST(request) {
         });
 
         return NextResponse.json(
-            { message: "User registered successfully" },
+            {
+                success: true,
+                message: "Account created successfully.",
+                user,
+            },
             { status: 201 }
         );
     } catch (error) {
+        console.error(error);
+
         return NextResponse.json(
-            { message: error.message },
+            {
+                success: false,
+                message: "Internal Server Error",
+            },
             { status: 500 }
         );
     }

@@ -70,7 +70,7 @@ export default function RecruiterSidebar() {
                     const active =
                         pathname === item.href ||
                         (item.href !== "/recruiter/dashboard" &&
-                            pathname.startsWith(item.href));
+                            pathname.startsWith(item.href) );
 
                     return (
 

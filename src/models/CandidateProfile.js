@@ -9,6 +9,17 @@ const candidateProfileSchema = new mongoose.Schema(
       unique: true,
     },
 
+    jobTitle: {
+      type: String,
+      default: "",
+    },
+
+    availability: {
+      type: String,
+      enum: ["Open to Work", "Not Looking"],
+      default: "Open to Work",
+    },
+
     phone: {
       type: String,
       default: "",
